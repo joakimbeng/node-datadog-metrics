@@ -1,4 +1,5 @@
 # datadog-metrics
+
 > Buffered metrics reporting via the DataDog HTTP API.
 
 [![NPM Version][npm-image]][npm-url]
@@ -12,7 +13,7 @@ The downside of using the HTTP API is that it can negatively affect your app's p
 ## Installation
 
 ```sh
-npm install datadog-metrics --save
+npm install @joakimbeng/datadog-metrics
 ```
 
 ## Example
@@ -20,21 +21,23 @@ npm install datadog-metrics --save
 ![](header.png)
 
 Save the following into a file named `example_app.js`:
+
 ```js
-var metrics = require('datadog-metrics');
-metrics.init({ host: 'myhost', prefix: 'myapp.' });
+const metrics = require('datadog-metrics');
+metrics.init({host: 'myhost', prefix: 'myapp.'});
 
 function collectMemoryStats() {
-    var memUsage = process.memoryUsage();
-    metrics.gauge('memory.rss', memUsage.rss);
-    metrics.gauge('memory.heapTotal', memUsage.heapTotal);
-    metrics.gauge('memory.heapUsed', memUsage.heapUsed);
-};
+  var memUsage = process.memoryUsage();
+  metrics.gauge('memory.rss', memUsage.rss);
+  metrics.gauge('memory.heapTotal', memUsage.heapTotal);
+  metrics.gauge('memory.heapUsed', memUsage.heapUsed);
+}
 
 setInterval(collectMemoryStats, 5000);
 ```
 
 Run it:
+
 ```sh
 DATADOG_API_KEY=YOUR_KEY DEBUG=metrics node example_app.js
 ```
@@ -43,13 +46,12 @@ DATADOG_API_KEY=YOUR_KEY DEBUG=metrics node example_app.js
 
 There's also a longer [tutorial](https://dbader.org/blog/monitoring-your-nodejs-app-with-datadog) that walks you through setting up a monitoring dashboard on DataDog using datadog-metrics.
 
-
 ## Usage
 
 ### DataDog API key
 
 Make sure the `DATADOG_API_KEY` environment variable is set to your DataDog
-API key. You can find the API key under [Integrations > APIs](https://app.datadoghq.com/account/settings#api). *You only need to provide the API key, not the APP key. However, you can provide an APP key if you want by setting the `DATADOG_APP_KEY` environment variable.*
+API key. You can find the API key under [Integrations > APIs](https://app.datadoghq.com/account/settings#api). _You only need to provide the API key, not the APP key. However, you can provide an APP key if you want by setting the `DATADOG_APP_KEY` environment variable._
 
 ### Module setup
 
@@ -74,10 +76,9 @@ functions. See the documentation for `init` below to learn more.
 
 ```js
 var metrics = require('datadog-metrics');
-metrics.init({ host: 'myhost', prefix: 'myapp.' });
+metrics.init({host: 'myhost', prefix: 'myapp.'});
 metrics.gauge('mygauge', 42);
 ```
-
 
 #### Use case #3: Must. Control. Everything.
 
@@ -86,11 +87,12 @@ If you need even more control you can create one or more `BufferedMetricsLogger`
 ```js
 var metrics = require('datadog-metrics');
 var metricsLogger = new metrics.BufferedMetricsLogger({
-    apiKey: 'TESTKEY',
-    host: 'myhost',
-    prefix: 'myapp.',
-    flushIntervalSeconds: 15,
-    defaultTags: ['env:staging', 'region:us-east-1']
+  api_key: 'TESTKEY',
+  api_host: 'app.datadoghq.eu',
+  host: 'myhost',
+  prefix: 'myapp.',
+  flushIntervalSeconds: 15,
+  defaultTags: ['env:staging', 'region:us-east-1']
 });
 metricsLogger.gauge('mygauge', 42);
 ```
@@ -103,37 +105,37 @@ metricsLogger.gauge('mygauge', 42);
 
 Where `options` is an object and can contain the following:
 
-* `host`: Sets the hostname reported with each metric. (optional)
-    * Setting a hostname is useful when you're running the same application
-      on multiple machines and you want to track them separately in DataDog.
-* `prefix`: Sets a default prefix for all metrics. (optional)
-    * Use this to namespace your metrics.
-* `flushIntervalSeconds`: How often to send metrics to DataDog. (optional)
-    * This defaults to 15 seconds. Set it to 0 to disable auto-flushing which
-      means you must call `flush()` manually.
-* `apiKey`: Sets the DataDog API key. (optional)
-    * It's usually best to keep this in an environment variable.
-      Datadog-metrics looks for the API key in `DATADOG_API_KEY` by default.
-* `appKey`: Sets the DataDog APP key. (optional)
-    * It's usually best to keep this in an environment variable.
-      Datadog-metrics looks for the APP key in `DATADOG_APP_KEY` by default.
-* `defaultTags`: Default tags used for all metric reporting. (optional)
-    * Set tags that are common to all metrics.
-* `agent`: custom https agent (optional)
-
+- `host`: Sets the hostname reported with each metric. (optional)
+  - Setting a hostname is useful when you're running the same application
+    on multiple machines and you want to track them separately in DataDog.
+- `prefix`: Sets a default prefix for all metrics. (optional)
+  - Use this to namespace your metrics.
+- `flushIntervalSeconds`: How often to send metrics to DataDog. (optional)
+  - This defaults to 15 seconds. Set it to 0 to disable auto-flushing which
+    means you must call `flush()` manually.
+- `api_key`: Sets the DataDog API key. (optional)
+  - It's usually best to keep this in an environment variable.
+    Datadog-metrics looks for the API key in `DATADOG_API_KEY` by default.
+- `api_host`: Sets the DataDog API host. (optional)
+  - Defaults to `app.datadoghq.com`
+- `app_key`: Sets the DataDog APP key. (optional)
+  - It's usually best to keep this in an environment variable.
+    Datadog-metrics looks for the APP key in `DATADOG_APP_KEY` by default.
+- `defaultTags`: Default tags used for all metric reporting. (optional)
+  - Set tags that are common to all metrics.
+- `agent`: custom https agent (optional)
 
 Example:
 
 ```js
-metrics.init({ host: 'myhost', prefix: 'myapp.' });
+metrics.init({host: 'myhost', prefix: 'myapp.'});
 ```
-
 
 ### Gauges
 
 `metrics.gauge(key, value[, tags[, timestamp]])`
 
-Record the current *value* of a metric. They most recent value in
+Record the current _value_ of a metric. They most recent value in
 a given flush interval will be recorded. Optionally, specify a set of
 tags to associate with the metric. This should be used for sum values
 such as total hard disk space, process uptime, total number of active
@@ -150,8 +152,8 @@ metrics.gauge('test.mem_free', 23);
 
 `metrics.increment(key[, value[, tags[, timestamp]]])`
 
-Increment the counter by the given *value* (or `1` by default). Optionally,
-specify a list of *tags* to associate with the metric. This is useful for
+Increment the counter by the given _value_ (or `1` by default). Optionally,
+specify a list of _tags_ to associate with the metric. This is useful for
 counting things such as incrementing a counter each time a page is requested.
 The optional timestamp is in milliseconds since 1 Jan 1970 00:00:00 UTC,
 e.g. from `Date.now()`.
@@ -170,7 +172,7 @@ metrics.increment('test.awesomeness_factor', 10);
 Sample a histogram value. Histograms will produce metrics that
 describe the distribution of the recorded values, namely the minimum,
 maximum, average, count and the 75th, 85th, 95th and 99th percentiles.
-Optionally, specify a list of *tags* to associate with the metric.
+Optionally, specify a list of _tags_ to associate with the metric.
 The optional timestamp is in milliseconds since 1 Jan 1970 00:00:00 UTC,
 e.g. from `Date.now()`.
 
@@ -211,39 +213,43 @@ npm test
 
 ## Release History
 
-* 0.8.1
-    * FIX: don't increment count when value is 0 (Thanks to @haspriyank)
-* 0.8.0
-    * allow passing in custom https agent (Thanks to @flovilmart)
-* 0.7.0
-    * update metric type `counter` to `count` as `counter` is deprecated by Datadog (Thanks to @dustingibbs)
-* 0.6.1
-    * FIX: bump debug to 3.1.0 to fix [NSP Advisory #534](https://nodesecurity.io/advisories/534) (Thanks to @kirkstrobeck)
-* 0.6.0
-    * FIX: call onSuccess on flush even if buffer is empty (Thanks to @mousavian)
-* 0.5.0
-    * ADD: ability to set custom timestamps (Thanks to @ronny)
-    * FIX: 0 as valid option for flushIntervalSeconds (thanks to @dkMorlok)
-* 0.4.0
-    * ADD: Initialize with a default set of tags (thanks to @spence)
-* 0.3.0
-    * FIX: Don't overwrite metrics with the same key but different tags when aggregating them (Thanks @akrylysov and @RavivIsraeli!)
-    * ADD: Add success/error callbacks to `metrics.flush()` (Thanks @akrylysov!)
-    * ADD: Allow DataDog APP key to be configured (Thanks @gert-fresh!)
-    * Bump dependencies to latest
-    * Update docs
-* 0.2.1
-    * Update docs (module code remains unchanged)
-* 0.2.0
-    * API redesign
-    * Remove `setDefaultXYZ()` and added `init()`
-* 0.1.1
-    * Allow `increment` to be called with a default value of 1
-* 0.1.0
-    * The first proper release
-    * Rename `counter` to `increment`
-* 0.0.0
-    * Work in progress
+- 1.0.0
+  - FIX: add support for api_host option see [dogapi](https://www.npmjs.com/package/dogapi)
+  - FEAT: start rewriting using new syntax BREAKING CHANGE: requires NodeJS +v10
+  - FEAT: replace JSHint and JSCS with ESLint
+- 0.8.1
+  - FIX: don't increment count when value is 0 (Thanks to @haspriyank)
+- 0.8.0
+  - allow passing in custom https agent (Thanks to @flovilmart)
+- 0.7.0
+  - update metric type `counter` to `count` as `counter` is deprecated by Datadog (Thanks to @dustingibbs)
+- 0.6.1
+  - FIX: bump debug to 3.1.0 to fix [NSP Advisory #534](https://nodesecurity.io/advisories/534) (Thanks to @kirkstrobeck)
+- 0.6.0
+  - FIX: call onSuccess on flush even if buffer is empty (Thanks to @mousavian)
+- 0.5.0
+  - ADD: ability to set custom timestamps (Thanks to @ronny)
+  - FIX: 0 as valid option for flushIntervalSeconds (thanks to @dkMorlok)
+- 0.4.0
+  - ADD: Initialize with a default set of tags (thanks to @spence)
+- 0.3.0
+  - FIX: Don't overwrite metrics with the same key but different tags when aggregating them (Thanks @akrylysov and @RavivIsraeli!)
+  - ADD: Add success/error callbacks to `metrics.flush()` (Thanks @akrylysov!)
+  - ADD: Allow DataDog APP key to be configured (Thanks @gert-fresh!)
+  - Bump dependencies to latest
+  - Update docs
+- 0.2.1
+  - Update docs (module code remains unchanged)
+- 0.2.0
+  - API redesign
+  - Remove `setDefaultXYZ()` and added `init()`
+- 0.1.1
+  - Allow `increment` to be called with a default value of 1
+- 0.1.0
+  - The first proper release
+  - Rename `counter` to `increment`
+- 0.0.0
+  - Work in progress
 
 ## Meta
 
@@ -251,7 +257,7 @@ This module is heavily inspired by the Python [dogapi module](https://github.com
 
 Daniel Bader – [@dbader_org](https://twitter.com/dbader_org) – mail@dbader.org
 
-Distributed under the MIT license. See ``LICENSE`` for more information.
+Distributed under the MIT license. See `LICENSE` for more information.
 
 [https://github.com/dbader/node-datadog-metrics](https://github.com/dbader/node-datadog-metrics)
 

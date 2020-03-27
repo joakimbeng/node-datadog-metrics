@@ -1,7 +1,7 @@
 'use strict';
-var loggers = require('./lib/loggers');
+const loggers = require('./lib/loggers');
 
-var sharedLogger = null;
+let sharedLogger = null;
 
 //
 // opts may include:
@@ -19,31 +19,30 @@ var sharedLogger = null;
 //     - aggregator: an Aggregator instance
 //     - reporter: a Reporter instance
 //
-function init(opts) {
-    opts = opts || {};
-    if (!opts.flushIntervalSeconds && opts.flushIntervalSeconds !== 0) {
-        opts.flushIntervalSeconds = 15;
-    }
-    sharedLogger = new loggers.BufferedMetricsLogger(opts);
+function init(opts = {}) {
+  if (!opts.flushIntervalSeconds && opts.flushIntervalSeconds !== 0) {
+    opts.flushIntervalSeconds = 15;
+  }
+  sharedLogger = new loggers.BufferedMetricsLogger(opts);
 }
 
 // This is meant to be curried via bind() so we don't have
 // to write wrappers for each metric individually.
 function callOnSharedLogger(funcName) {
+  return (...args) => {
     if (sharedLogger === null) {
-        init();
+      init();
     }
-    var args = Array.prototype.slice.call(arguments, 1);
-    sharedLogger[funcName].apply(sharedLogger, args);
+    return sharedLogger[funcName](...args);
+  };
 }
 
-
 module.exports = {
-    init: init,
-    flush: callOnSharedLogger.bind(undefined, 'flush'),
-    gauge: callOnSharedLogger.bind(undefined, 'gauge'),
-    increment: callOnSharedLogger.bind(undefined, 'increment'),
-    histogram: callOnSharedLogger.bind(undefined, 'histogram'),
+  init,
+  flush: callOnSharedLogger('flush'),
+  gauge: callOnSharedLogger('gauge'),
+  increment: callOnSharedLogger('increment'),
+  histogram: callOnSharedLogger('histogram'),
 
-    BufferedMetricsLogger: loggers.BufferedMetricsLogger
+  BufferedMetricsLogger: loggers.BufferedMetricsLogger
 };
